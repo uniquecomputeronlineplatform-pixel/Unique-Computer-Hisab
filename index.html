@@ -69,6 +69,32 @@
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
+        .modal-enter {
+            opacity: 0;
+        }
+        .modal-enter-active {
+            opacity: 1;
+            transition: opacity 300ms;
+        }
+        .modal-leave-active {
+            opacity: 0;
+            transition: opacity 300ms;
+        }
+        .modal-box-enter {
+            transform: scale(0.95);
+            opacity: 0;
+        }
+        .modal-box-enter-active {
+            transform: scale(1);
+            opacity: 1;
+            transition: all 300ms;
+        }
+        .modal-box-leave-active {
+            transform: scale(0.95);
+            opacity: 0;
+            transition: all 300ms;
+        }
+
     </style>
 </head>
 <body class="antialiased">
@@ -80,8 +106,8 @@
             <p class="text-center text-gray-400 mb-6">লগইন করে শুরু করুন</p>
             <form id="login-form">
                 <div class="mb-4">
-                    <label for="username" class="block text-gray-300 mb-2">ইউজার আইডি</label>
-                    <input type="text" id="username" class="form-input w-full p-3 rounded-lg" placeholder="e.g., admin" required>
+                    <label for="username" class="block text-gray-300 mb-2">ইমেল</label>
+                    <input type="email" id="username" class="form-input w-full p-3 rounded-lg" placeholder="" required>
                 </div>
                 <div class="mb-6">
                     <label for="password" class="block text-gray-300 mb-2">পাসওয়ার্ড</label>
@@ -92,13 +118,61 @@
             </form>
         </div>
     </div>
+    
+    <!-- Edit Modal -->
+    <div id="edit-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 overflow-y-auto p-4">
+        <div class="bg-gray-800 p-8 rounded-2xl shadow-2xl w-full max-w-lg my-8" id="edit-box">
+            <div class="flex justify-between items-center mb-6">
+                <button type="button" id="back-edit-btn" class="p-2 rounded-full text-gray-400 hover:bg-gray-700 hover:text-white transition-colors">
+                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                </button>
+                <h2 class="text-2xl font-bold text-cyan-400">লেনদেন সম্পাদনা</h2>
+                <button type="button" id="delete-btn" class="p-2 rounded-full text-gray-400 hover:text-red-400 transition-colors" title="ডিলিট করুন">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                </button>
+            </div>
+            <form id="edit-form">
+                <input type="hidden" id="edit-id">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="edit-date" class="block text-gray-300 mb-2">তারিখ</label>
+                        <input type="date" id="edit-date" class="form-input w-full p-3 rounded-lg">
+                    </div>
+                    <div>
+                        <label for="edit-type" class="block text-gray-300 mb-2">ধরন</label>
+                        <select id="edit-type" class="form-select w-full p-3 rounded-lg">
+                            <option value="Ay">আয়</option>
+                            <option value="Bey">ব্যয়</option>
+                            <option value="Uttulon">উত্তোলন</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mt-6">
+                    <label for="edit-description" class="block text-gray-300 mb-2">বিবরণ</label>
+                    <input type="text" id="edit-description" class="form-input w-full p-3 rounded-lg">
+                </div>
+                <div class="mt-6">
+                    <label for="edit-amount" class="block text-gray-300 mb-2">টাকার পরিমাণ</label>
+                    <input type="number" id="edit-amount" inputmode="decimal" class="form-input w-full p-3 rounded-lg">
+                </div>
+                <div class="mt-8 flex gap-4">
+                    <button type="button" id="cancel-edit-btn" class="w-full btn bg-gray-600 hover:bg-gray-500 text-white font-bold py-3 rounded-lg">বাতিল করুন</button>
+                    <button type="submit" class="w-full btn btn-primary text-white font-bold py-3 rounded-lg">সংরক্ষণ করুন</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
 
     <!-- Main Page -->
     <div id="main-page" class="hidden">
         <header class="bg-gray-800/80 backdrop-blur-sm sticky top-0 z-10">
             <div class="container mx-auto px-4 py-4 flex justify-between items-center">
                 <h1 class="text-2xl font-bold text-cyan-400">ইউনিক কম্পিউটার হিসাব</h1>
-                <button id="data-btn" class="btn bg-cyan-600 hover:bg-cyan-500 text-white font-semibold px-6 py-2 rounded-lg">ডেটা</button>
+                <div>
+                    <button id="data-btn" class="btn bg-cyan-600 hover:bg-cyan-500 text-white font-semibold px-6 py-2 rounded-lg">ডেটা</button>
+                    <button id="logout-btn" class="btn bg-red-600 hover:bg-red-500 text-white font-semibold px-6 py-2 rounded-lg ml-4">লগআউট</button>
+                </div>
             </div>
         </header>
 
@@ -127,6 +201,10 @@
                     <div class="mt-6">
                         <label for="description" class="block text-gray-300 mb-2">বিবরণ</label>
                         <input type="text" id="description" class="form-input w-full p-3 rounded-lg" placeholder="হিসাবের বিবরণ লিখুন">
+                         <div id="description-suggestions" class="hidden mt-2 flex gap-2">
+                            <button type="button" class="suggestion-btn bg-gray-700 hover:bg-gray-600 text-cyan-300 text-sm px-3 py-1 rounded-full">@Noman</button>
+                            <button type="button" class="suggestion-btn bg-gray-700 hover:bg-gray-600 text-cyan-300 text-sm px-3 py-1 rounded-full">@Rayan Sir</button>
+                        </div>
                     </div>
                     <!-- Amount Field -->
                     <div class="mt-6">
@@ -202,6 +280,52 @@
                     <canvas id="myChart"></canvas>
                 </div>
             </section>
+            
+            <!-- Partner Summary Section -->
+            <section class="mb-8">
+                <h3 class="text-xl font-semibold p-6 text-cyan-300 border-b border-gray-700 bg-gray-800 rounded-t-2xl">পার্টনারদের হিসাব</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-0 bg-gray-800 rounded-b-2xl shadow-xl overflow-hidden">
+                    <!-- Noman -->
+                    <div class="p-6 border-b md:border-b-0 md:border-r border-gray-700">
+                        <div class="flex justify-between items-center mb-3">
+                            <h4 class="text-lg font-bold text-white">নোমান</h4>
+                            <span class="text-sm font-semibold bg-cyan-800 text-cyan-200 px-3 py-1 rounded-full">৪০%</span>
+                        </div>
+                        <div class="space-y-2 text-md">
+                            <div class="flex justify-between"><span class="text-gray-400">মোট আয়:</span> <span id="noman-income" class="font-semibold text-gray-200">০.০০ ৳</span></div>
+                            <div class="flex justify-between"><span class="text-gray-400">মোট উত্তোলন:</span> <span id="noman-withdrawal" class="font-semibold text-gray-200">০.০০ ৳</span></div>
+                            <div class="border-t border-gray-600 my-1"></div>
+                            <div class="flex justify-between"><span class="text-gray-300 font-bold">ব্যালেন্স:</span> <span id="noman-balance" class="font-bold text-xl">০.০০ ৳</span></div>
+                        </div>
+                    </div>
+                    <!-- Dokan -->
+                    <div class="p-6 border-b md:border-b-0 md:border-r border-gray-700">
+                        <div class="flex justify-between items-center mb-3">
+                            <h4 class="text-lg font-bold text-white">দোকান</h4>
+                            <span class="text-sm font-semibold bg-gray-600 text-gray-200 px-3 py-1 rounded-full">২০%</span>
+                        </div>
+                        <div class="space-y-2 text-md">
+                             <div class="flex justify-between"><span class="text-gray-300 font-bold">ব্যালেন্স:</span> <span id="dokan-balance" class="font-bold text-xl">০.০০ ৳</span></div>
+                             <div class="h-10 mt-2">
+                                <p id="dokan-deficit-info" class="text-sm text-red-400"></p>
+                             </div>
+                        </div>
+                    </div>
+                    <!-- Rayan Sir -->
+                    <div class="p-6">
+                        <div class="flex justify-between items-center mb-3">
+                            <h4 class="text-lg font-bold text-white">রায়ান স্যার</h4>
+                            <span class="text-sm font-semibold bg-cyan-800 text-cyan-200 px-3 py-1 rounded-full">৪০%</span>
+                        </div>
+                        <div class="space-y-2 text-md">
+                            <div class="flex justify-between"><span class="text-gray-400">মোট আয়:</span> <span id="rayan-income" class="font-semibold text-gray-200">০.০০ ৳</span></div>
+                            <div class="flex justify-between"><span class="text-gray-400">মোট উত্তোলন:</span> <span id="rayan-withdrawal" class="font-semibold text-gray-200">০.০০ ৳</span></div>
+                            <div class="border-t border-gray-600 my-1"></div>
+                            <div class="flex justify-between"><span class="text-gray-300 font-bold">ব্যালেন্স:</span> <span id="rayan-balance" class="font-bold text-xl">০.০০ ৳</span></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
             <!-- Data Table Section -->
             <section class="bg-gray-800 rounded-2xl shadow-xl overflow-hidden">
@@ -215,6 +339,7 @@
                                 <th class="p-4">ধরন</th>
                                 <th class="p-4">বিবরণ</th>
                                 <th class="p-4 text-right">টাকার পরিমাণ</th>
+                                <th class="p-4 text-center">সম্পাদনা</th>
                             </tr>
                         </thead>
                         <tbody id="transaction-table-body">
@@ -229,8 +354,8 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, Timestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, Timestamp, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         document.addEventListener('DOMContentLoaded', () => {
             // Element selectors
@@ -240,16 +365,24 @@
             const usernameInput = document.getElementById('username');
             const passwordInput = document.getElementById('password');
             const loginError = document.getElementById('login-error');
-            
-            // Change username label to Email
-            document.querySelector('label[for="username"]').textContent = 'ইমেল';
-            usernameInput.type = 'email';
-            usernameInput.placeholder = 'e.g., admin@gmail.com';
 
+            const editModal = document.getElementById('edit-modal');
+            const editBox = document.getElementById('edit-box');
+            const editForm = document.getElementById('edit-form');
+            const editIdInput = document.getElementById('edit-id');
+            const editDateInput = document.getElementById('edit-date');
+            const editTypeInput = document.getElementById('edit-type');
+            const editDescriptionInput = document.getElementById('edit-description');
+            const editAmountInput = document.getElementById('edit-amount');
+            const cancelEditBtn = document.getElementById('cancel-edit-btn');
+            const backEditBtn = document.getElementById('back-edit-btn');
+            const deleteBtn = document.getElementById('delete-btn');
+            
             const mainPage = document.getElementById('main-page');
             const dataPage = document.getElementById('data-page');
 
             const dataBtn = document.getElementById('data-btn');
+            const logoutBtn = document.getElementById('logout-btn');
             const backBtn = document.getElementById('back-btn');
 
             const transactionForm = document.getElementById('transaction-form');
@@ -258,6 +391,7 @@
             const descriptionInput = document.getElementById('description');
             const amountInput = document.getElementById('amount');
             const submitBtn = document.getElementById('submit-btn');
+            const suggestionsDiv = document.getElementById('description-suggestions');
             
             const tableBody = document.getElementById('transaction-table-body');
             const totalIncomeEl = document.getElementById('total-income');
@@ -282,7 +416,7 @@
                 messagingSenderId: "860795073108",
                 appId: "1:860795073108:web:17807ed88c8cf002ca33c1"
             };
-            const appId = firebaseConfig.appId; // FIX: Define appId from config
+            const appId = firebaseConfig.appId;
             
             const app = initializeApp(firebaseConfig);
             const db = getFirestore(app);
@@ -292,17 +426,18 @@
             let transactions = [];
             let unsubscribe; 
             let userId;
+            
+            // Helper function to format currency
+            const formatCurrency = (num) => num.toLocaleString('bn-BD', { style: 'currency', currency: 'BDT' });
 
             // --- AUTHENTICATION & LOGIN LOGIC ---
             onAuthStateChanged(auth, (user) => {
                 if (user) {
-                    // User is signed in
                     userId = user.uid;
                     setupRealtimeListener();
                     loginModal.classList.add('opacity-0', 'pointer-events-none');
                     mainPage.classList.remove('hidden');
                 } else {
-                    // User is signed out
                     if (unsubscribe) unsubscribe();
                     userId = null;
                     loginModal.classList.remove('opacity-0', 'pointer-events-none');
@@ -322,17 +457,13 @@
                 const email = usernameInput.value;
                 const password = passwordInput.value;
 
-                signInWithEmailAndPassword(auth, email, password)
+                setPersistence(auth, browserLocalPersistence)
+                    .then(() => signInWithEmailAndPassword(auth, email, password))
                     .catch((error) => {
-                        // Log the full error to the console for detailed debugging
                         console.error("Full Login Error Object:", error);
-
                         if (error.code === 'auth/invalid-credential') {
                             loginError.textContent = 'ভুল ইমেল অথবা পাসওয়ার্ড!';
-                        } else if (error.code === 'auth/operation-not-allowed') {
-                            loginError.textContent = 'এই লগইন পদ্ধতিটি চালু নেই।';
-                        }
-                        else {
+                        } else {
                             loginError.textContent = 'একটি সমস্যা হয়েছে। আবার চেষ্টা করুন।';
                         }
                         loginBox.classList.add('animate-shake');
@@ -345,7 +476,7 @@
             document.head.appendChild(style);
 
 
-            // --- PAGE NAVIGATION ---
+            // --- PAGE NAVIGATION & LOGOUT ---
             dataBtn.addEventListener('click', () => {
                 mainPage.classList.add('hidden');
                 dataPage.classList.remove('hidden');
@@ -357,12 +488,26 @@
                 mainPage.classList.remove('hidden');
             });
 
+            logoutBtn.addEventListener('click', () => {
+                signOut(auth).catch(error => console.error('Logout Error:', error));
+            });
+
             // --- MAIN PAGE FORM LOGIC ---
             dateInput.value = new Date().toISOString().slice(0, 10);
             const formInputs = [dateInput, typeInput, descriptionInput, amountInput];
             formInputs.forEach(input => input.addEventListener('input', validateForm));
 
+            typeInput.addEventListener('change', () => {
+                suggestionsDiv.classList.toggle('hidden', typeInput.value !== 'Uttulon');
+            });
 
+            document.querySelectorAll('.suggestion-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const currentText = descriptionInput.value;
+                    descriptionInput.value += (currentText.trim() ? ' ' : '') + btn.textContent;
+                    descriptionInput.focus();
+                });
+            });
 
             function validateForm() {
                 const allFilled = formInputs.every(input => input.value.trim() !== '');
@@ -371,10 +516,7 @@
             
             transactionForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
-                if (!userId) {
-                    alert("অনুগ্রহ করে আবার চেষ্টা করুন।");
-                    return;
-                }
+                if (!userId) return;
                 const newTransaction = {
                     date: dateInput.value,
                     type: typeInput.value,
@@ -386,11 +528,10 @@
                 try {
                     const collectionPath = `artifacts/${appId}/users/${userId}/transactions`;
                     await addDoc(collection(db, collectionPath), newTransaction);
-                    
                     transactionForm.reset();
                     dateInput.value = new Date().toISOString().slice(0, 10);
                     validateForm();
-                    
+                    suggestionsDiv.classList.add('hidden');
                     submitBtn.textContent = 'সফলভাবে যোগ হয়েছে!';
                     submitBtn.classList.replace('btn-primary', 'bg-green-600');
                     setTimeout(() => {
@@ -413,54 +554,226 @@
                 
                 unsubscribe = onSnapshot(q, (querySnapshot) => {
                     const fetchedTransactions = [];
-                    querySnapshot.forEach((doc) => {
-                        fetchedTransactions.push({ id: doc.id, ...doc.data() });
+                    querySnapshot.forEach((doc) => fetchedTransactions.push({ id: doc.id, ...doc.data() }));
+                    
+                    transactions = fetchedTransactions.sort((a, b) => {
+                        const dateA = new Date(a.date);
+                        const dateB = new Date(b.date);
+                        if (dateB > dateA) return 1;
+                        if (dateB < dateA) return -1;
+                        // If dates are same, sort by creation time
+                        return b.createdAt.toMillis() - a.createdAt.toMillis();
                     });
                     
-                    transactions = fetchedTransactions.sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis());
-                    
+                    updatePartnerSummary(transactions);
+
                     if (!dataPage.classList.contains('hidden')) {
-                        renderData(transactions);
+                         const startDate = startDateInput.value;
+                         const endDate = endDateInput.value;
+                         if (startDate && endDate) {
+                            const filteredData = transactions.filter(t => t.date >= startDate && t.date <= endDate);
+                            renderData(filteredData);
+                         } else {
+                            renderData(transactions);
+                         }
                     }
-                }, (error) => {
-                    console.error("Error fetching realtime data:", error);
-                });
+                }, (error) => console.error("Error fetching realtime data:", error));
             };
             
             const renderData = (dataToRender) => {
                 tableBody.innerHTML = '';
                 if (dataToRender.length === 0) {
-                    tableBody.innerHTML = `<tr><td colspan="5" class="text-center p-8 text-gray-400">কোনো ডেটা পাওয়া যায়নি।</td></tr>`;
+                    tableBody.innerHTML = `<tr><td colspan="6" class="text-center p-8 text-gray-400">কোনো ডেটা পাওয়া যায়নি।</td></tr>`;
                 } else {
                     dataToRender.forEach((tr, index) => {
                         const row = document.createElement('tr');
                         row.className = 'border-b border-gray-700 hover:bg-gray-700/50 transition-colors duration-200';
                         
-                        let amountColor = '';
-                        if (tr.type === 'Ay') amountColor = 'text-green-400';
-                        else if (tr.type === 'Bey') amountColor = 'text-red-400';
-                        else if (tr.type === 'Uttulon') amountColor = 'text-yellow-400';
+                        let amountColor = tr.type === 'Ay' ? 'text-green-400' : (tr.type === 'Bey' ? 'text-red-400' : 'text-yellow-400');
 
                         row.innerHTML = `
-                            <td class="p-4 text-gray-400">${dataToRender.length - index}</td>
+                            <td class="p-4 text-gray-400">${index + 1}</td>
                             <td class="p-4">${new Date(tr.date).toLocaleDateString('bn-BD')}</td>
                             <td class="p-4"><span class="px-2 py-1 rounded-full text-sm font-semibold ${tr.type === 'Ay' ? 'bg-green-900 text-green-300' : tr.type === 'Bey' ? 'bg-red-900 text-red-300' : 'bg-yellow-900 text-yellow-300'}">${tr.type === 'Ay' ? 'আয়' : tr.type === 'Bey' ? 'ব্যয়' : 'উত্তোলন'}</span></td>
                             <td class="p-4">${tr.description}</td>
-                            <td class="p-4 text-right font-semibold ${amountColor}">${tr.amount.toLocaleString('bn-BD', { style: 'currency', currency: 'BDT' })}</td>
+                            <td class="p-4 text-right font-semibold ${amountColor}">${formatCurrency(tr.amount)}</td>
+                            <td class="p-4 text-center">
+                                <button class="edit-btn p-2 rounded-full hover:bg-cyan-600/50" data-id="${tr.id}">
+                                    <svg class="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L16.732 3.732z"></path></svg>
+                                </button>
+                            </td>
                         `;
                         tableBody.appendChild(row);
                     });
                 }
                 updateSummaryAndChart(dataToRender);
+                 // Add event listeners after rows are created
+                document.querySelectorAll('.edit-btn').forEach(button => {
+                    button.addEventListener('click', () => {
+                        const transactionId = button.dataset.id;
+                        const transactionData = transactions.find(t => t.id === transactionId);
+                        if (transactionData) {
+                            openEditModal(transactionData);
+                        }
+                    });
+                });
             };
+
+            // --- Edit Modal Logic ---
+            function openEditModal(transaction) {
+                document.body.classList.add('overflow-hidden');
+                editIdInput.value = transaction.id;
+                editDateInput.value = transaction.date;
+                editTypeInput.value = transaction.type;
+                editDescriptionInput.value = transaction.description;
+                editAmountInput.value = transaction.amount;
+
+                // Reset delete button state
+                deleteBtn.dataset.id = transaction.id;
+                deleteBtn.dataset.confirmed = 'false';
+                deleteBtn.classList.remove('text-red-400', 'bg-red-900');
+                
+                editModal.classList.remove('hidden');
+                editModal.classList.add('modal-enter', 'modal-enter-active');
+                editBox.classList.add('modal-box-enter', 'modal-box-enter-active');
+            }
+
+            function closeEditModal() {
+                document.body.classList.remove('overflow-hidden');
+                editModal.classList.add('modal-leave-active');
+                editBox.classList.add('modal-box-leave-active');
+                setTimeout(() => {
+                    editModal.classList.add('hidden');
+                    editModal.classList.remove('modal-enter', 'modal-enter-active', 'modal-leave-active');
+                    editBox.classList.remove('modal-box-enter', 'modal-box-enter-active', 'modal-box-leave-active');
+                }, 300);
+            }
+
+            cancelEditBtn.addEventListener('click', closeEditModal);
+            backEditBtn.addEventListener('click', closeEditModal);
+
+            editForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const transactionId = editIdInput.value;
+                if (!transactionId || !userId) return;
+
+                const updatedData = {
+                    date: editDateInput.value,
+                    type: editTypeInput.value,
+                    description: editDescriptionInput.value,
+                    amount: parseFloat(editAmountInput.value),
+                };
+                
+                try {
+                    const collectionPath = `artifacts/${appId}/users/${userId}/transactions`;
+                    const docRef = doc(db, collectionPath, transactionId);
+                    await updateDoc(docRef, updatedData);
+                    closeEditModal();
+                } catch (error) {
+                    console.error("Error updating document:", error);
+                    alert("আপডেট করতে সমস্যা হয়েছে।");
+                }
+            });
+
+            // --- Delete Logic ---
+            let deleteTimeout;
+            deleteBtn.addEventListener('click', () => {
+                const isConfirmed = deleteBtn.dataset.confirmed === 'true';
+                const transactionId = deleteBtn.dataset.id;
+
+                clearTimeout(deleteTimeout);
+
+                if (isConfirmed) {
+                    deleteTransaction(transactionId);
+                } else {
+                    deleteBtn.dataset.confirmed = 'true';
+                    deleteBtn.classList.add('text-red-400', 'bg-red-900');
+                    
+                    deleteTimeout = setTimeout(() => {
+                         deleteBtn.dataset.confirmed = 'false';
+                         deleteBtn.classList.remove('text-red-400', 'bg-red-900');
+                    }, 3000);
+                }
+            });
+
+            async function deleteTransaction(id) {
+                if (!id || !userId) return;
+                try {
+                    const collectionPath = `artifacts/${appId}/users/${userId}/transactions`;
+                    const docRef = doc(db, collectionPath, id);
+                    await deleteDoc(docRef);
+                    closeEditModal();
+                } catch (error) {
+                    console.error("Error deleting document:", error);
+                    alert("ডিলিট করতে সমস্যা হয়েছে।");
+                }
+            }
+
+
+            const updatePartnerSummary = (allTransactions) => {
+                const nomanIncomeEl = document.getElementById('noman-income');
+                const nomanWithdrawalEl = document.getElementById('noman-withdrawal');
+                const nomanBalanceEl = document.getElementById('noman-balance');
+                const rayanIncomeEl = document.getElementById('rayan-income');
+                const rayanWithdrawalEl = document.getElementById('rayan-withdrawal');
+                const rayanBalanceEl = document.getElementById('rayan-balance');
+                const dokanBalanceEl = document.getElementById('dokan-balance');
+                const dokanDeficitInfoEl = document.getElementById('dokan-deficit-info');
+
+                const totalIncome = allTransactions.filter(t => t.type === 'Ay').reduce((sum, t) => sum + t.amount, 0);
+                
+                const nomanIncomeShare = totalIncome * 0.40;
+                const rayanIncomeShare = totalIncome * 0.40;
+                const dokanIncomeShare = totalIncome * 0.20;
+
+                let nomanTotalWithdrawal = 0;
+                let rayanTotalWithdrawal = 0;
+                allTransactions.forEach(t => {
+                    if (t.type === 'Uttulon') {
+                        const descriptionLower = t.description.toLowerCase();
+                        if (descriptionLower.includes('@noman')) {
+                            nomanTotalWithdrawal += t.amount;
+                        } else if (descriptionLower.includes('@rayan')) {
+                            rayanTotalWithdrawal += t.amount;
+                        }
+                    }
+                });
+
+                const nomanBalance = nomanIncomeShare - nomanTotalWithdrawal;
+                const rayanBalance = rayanIncomeShare - rayanTotalWithdrawal;
+
+                let dokanFinalBalance = dokanIncomeShare;
+                let deficitMessages = [];
+                if (nomanBalance < 0) {
+                    dokanFinalBalance += nomanBalance;
+                    deficitMessages.push(`নোমান নিয়েছে: ${formatCurrency(nomanBalance)}`);
+                }
+                if (rayanBalance < 0) {
+                    dokanFinalBalance += rayanBalance;
+                    deficitMessages.push(`রায়ান নিয়েছে: ${formatCurrency(rayanBalance)}`);
+                }
+
+                nomanIncomeEl.textContent = formatCurrency(nomanIncomeShare);
+                nomanWithdrawalEl.textContent = formatCurrency(nomanTotalWithdrawal);
+                nomanBalanceEl.textContent = formatCurrency(nomanBalance);
+                nomanBalanceEl.style.color = nomanBalance < 0 ? '#F87171' : '#6EE7B7';
+
+                rayanIncomeEl.textContent = formatCurrency(rayanIncomeShare);
+                rayanWithdrawalEl.textContent = formatCurrency(rayanTotalWithdrawal);
+                rayanBalanceEl.textContent = formatCurrency(rayanBalance);
+                rayanBalanceEl.style.color = rayanBalance < 0 ? '#F87171' : '#6EE7B7';
+
+                dokanBalanceEl.textContent = formatCurrency(dokanFinalBalance);
+                dokanBalanceEl.style.color = dokanFinalBalance < 0 ? '#F87171' : '#6EE7B7';
+                dokanDeficitInfoEl.innerHTML = deficitMessages.join('<br>');
+            };
+
 
             const updateSummaryAndChart = (data) => {
                 const totalIncome = data.filter(t => t.type === 'Ay').reduce((sum, t) => sum + t.amount, 0);
                 const totalExpense = data.filter(t => t.type === 'Bey').reduce((sum, t) => sum + t.amount, 0);
                 const totalWithdrawal = data.filter(t => t.type === 'Uttulon').reduce((sum, t) => sum + t.amount, 0);
                 const totalBalance = totalIncome - totalExpense - totalWithdrawal;
-                
-                const formatCurrency = (num) => num.toLocaleString('bn-BD', { style: 'currency', currency: 'BDT' });
 
                 totalIncomeEl.textContent = formatCurrency(totalIncome);
                 totalExpenseEl.textContent = formatCurrency(totalExpense);
@@ -499,7 +812,6 @@
                 const startDate = startDateInput.value;
                 const endDate = endDateInput.value;
                 if (!startDate || !endDate) return;
-
                 const filteredData = transactions.filter(t => t.date >= startDate && t.date <= endDate);
                 renderData(filteredData);
             });
