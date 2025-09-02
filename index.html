@@ -304,11 +304,8 @@
                             <h4 class="text-lg font-bold text-white">দোকান</h4>
                             <span class="text-sm font-semibold bg-gray-600 text-gray-200 px-3 py-1 rounded-full">২০%</span>
                         </div>
-                        <div class="space-y-2 text-md">
-                             <div class="flex justify-between"><span class="text-gray-300 font-bold">ব্যালেন্স:</span> <span id="dokan-balance" class="font-bold text-xl">০.০০ ৳</span></div>
-                             <div class="h-10 mt-2">
-                                <p id="dokan-deficit-info" class="text-sm text-red-400"></p>
-                             </div>
+                        <div id="dokan-calculation-breakdown" class="space-y-2 text-md">
+                           <!-- Populated by JS -->
                         </div>
                     </div>
                     <!-- Rayan Sir -->
@@ -717,10 +714,10 @@
                 const rayanIncomeEl = document.getElementById('rayan-income');
                 const rayanWithdrawalEl = document.getElementById('rayan-withdrawal');
                 const rayanBalanceEl = document.getElementById('rayan-balance');
-                const dokanBalanceEl = document.getElementById('dokan-balance');
-                const dokanDeficitInfoEl = document.getElementById('dokan-deficit-info');
+                const dokanBreakdownEl = document.getElementById('dokan-calculation-breakdown');
 
                 const totalIncome = allTransactions.filter(t => t.type === 'Ay').reduce((sum, t) => sum + t.amount, 0);
+                const totalBey = allTransactions.filter(t => t.type === 'Bey').reduce((sum, t) => sum + t.amount, 0);
                 
                 const nomanIncomeShare = totalIncome * 0.40;
                 const rayanIncomeShare = totalIncome * 0.40;
@@ -742,15 +739,12 @@
                 const nomanBalance = nomanIncomeShare - nomanTotalWithdrawal;
                 const rayanBalance = rayanIncomeShare - rayanTotalWithdrawal;
 
-                let dokanFinalBalance = dokanIncomeShare;
-                let deficitMessages = [];
+                let dokanFinalBalance = dokanIncomeShare - totalBey;
                 if (nomanBalance < 0) {
                     dokanFinalBalance += nomanBalance;
-                    deficitMessages.push(`নোমান নিয়েছে: ${formatCurrency(nomanBalance)}`);
                 }
                 if (rayanBalance < 0) {
                     dokanFinalBalance += rayanBalance;
-                    deficitMessages.push(`রায়ান নিয়েছে: ${formatCurrency(rayanBalance)}`);
                 }
 
                 nomanIncomeEl.textContent = formatCurrency(nomanIncomeShare);
@@ -763,9 +757,25 @@
                 rayanBalanceEl.textContent = formatCurrency(rayanBalance);
                 rayanBalanceEl.style.color = rayanBalance < 0 ? '#F87171' : '#6EE7B7';
 
-                dokanBalanceEl.textContent = formatCurrency(dokanFinalBalance);
-                dokanBalanceEl.style.color = dokanFinalBalance < 0 ? '#F87171' : '#6EE7B7';
-                dokanDeficitInfoEl.innerHTML = deficitMessages.join('<br>');
+                // Update Dokan Breakdown
+                let breakdownHTML = `
+                    <div class="flex justify-between"><span class="text-gray-400">আয় (২০%):</span> <span class="font-semibold text-gray-200">${formatCurrency(dokanIncomeShare)}</span></div>
+                    <div class="flex justify-between"><span class="text-gray-400">মোট ব্যয়:</span> <span class="font-semibold text-red-400">-${formatCurrency(totalBey)}</span></div>
+                `;
+
+                if (nomanBalance < 0) {
+                    breakdownHTML += `<div class="flex justify-between"><span class="text-gray-400">নোমান নিয়েছে:</span> <span class="font-semibold text-red-400">${formatCurrency(nomanBalance)}</span></div>`;
+                }
+                if (rayanBalance < 0) {
+                    breakdownHTML += `<div class="flex justify-between"><span class="text-gray-400">রায়ান নিয়েছে:</span> <span class="font-semibold text-red-400">${formatCurrency(rayanBalance)}</span></div>`;
+                }
+
+                breakdownHTML += `
+                    <div class="border-t border-gray-600 my-1"></div>
+                    <div class="flex justify-between"><span class="text-gray-300 font-bold">অবশিষ্ট ব্যালেন্স:</span> <span class="font-bold text-xl ${dokanFinalBalance < 0 ? 'text-red-400' : 'text-cyan-400'}">${formatCurrency(dokanFinalBalance)}</span></div>
+                `;
+
+                dokanBreakdownEl.innerHTML = breakdownHTML;
             };
 
 
